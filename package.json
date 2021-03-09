@@ -8,6 +8,7 @@
     "joi": "^13.1.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
+    "pug": "^3.0.2",
     "sequelize": "^6.5.0"
   },
   "devDependencies": {},

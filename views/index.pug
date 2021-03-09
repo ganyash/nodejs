@@ -1,0 +1,49 @@
+doctype html
+html
+    head
+        link(rel="stylesheet",type="text/css", href="stylesheets/index.css")
+        style.
+            p {
+                color: red;
+            }
+            #firstparaId {
+                color: brown;
+            }
+    body
+        p#firstparaId(name="yash" age="20") this is single line paragraph.
+        p.secondparaclass
+            |this is multiline para
+            |and para para
+        - const a =['a','b','c']
+        - const myStyles ={"color": "red", "background-color": "yellow"}
+        ul(class=a, style=myStyles)
+            li this is item1.
+            li.
+                this is multiline item
+                number 2
+        .display-box
+        - const myAttributes={"src":"pic.png", "style":{"background-color": "red"}}
+        img&attributes(myAttributes)
+        - const understandEachLoop = [1,2,3]
+        each ele, index in understandEachLoop
+            p=ele+index
+        
+        - const understandEachLoop1 = {"a":1,"b":2,"c":3}
+        each ele1, index1 in understandEachLoop1
+            p=ele1+index1
+
+        - const understandForLoop1 = {"a":1,"b":2,"c":3}
+        for ele1, index1 in understandForLoop1
+            p=ele1+index1
+        else
+            p No values are here, else will run if arr/obj is empty
+        
+        -let understandIfElse ={name: "yash" , age: 24}
+        if understandIfElse.age>20
+            p
+                strong #{understandIfElse.age} 
+        else
+            p.
+                this is   
+                multi name yash gandhi 
+        

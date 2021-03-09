@@ -2,6 +2,7 @@ const db = require("../models");
 const user = require("../models/user");
 const User = db.user;
 const Todo = db.todo;
+const Tags = db.tags;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Tutorial
@@ -14,16 +15,40 @@ exports.create = async (req, res) => {
         return;
     }
 
-    // Create a Tutorial
     const user = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        email: req.body.email,
-        todoId: req.body.todoId ? req.body.todoId : null
+        email: req.body.email
     };
 
     try {
         const data = await User.create(user);
+        let todo = {};
+        if (req.body.todos && req.body.todos.length !== 0) {
+            const todosList = req.body.todos;
+            for (const todoItem of todosList) {
+                todo = {
+                    title: todoItem.title,
+                    dueDate: todoItem.dueDate,
+                    isCompleted: todoItem.isCompleted,
+                    userId: data.id
+                }
+                const createdTodo = await Todo.create(todo);
+                let tag = {};
+                if (todoItem.tags && todoItem.tags.length !== 0) {
+                    const tagsList = todoItem.tags;
+                    for (const tagItem of tagsList) {
+                        tag = {
+                            tagName: tagItem,
+                            todoId: createdTodo.id
+
+                        }
+                        await Tags.create(tag);
+
+                    }
+                }
+            }
+        }
 
         res.send(data);
     }
@@ -107,76 +132,82 @@ exports.listTodos = async (req, res) => {
 
     userId = parseInt(userId);
 
-    const rowUser = await User.findAll({
+    const rowTodos = await Todo.findAll({
         where: {
-            id: {
+            userId: {
                 [Op.eq]: userId
             }
         }
     })
-    if (rowUser.length === 0) {
-        res.status(400).send("User id does not exist")
-    }
 
-    const todoId = rowUser[0].todoId;
-
-    const rowTodo = await Todo.findAll({
-        where: {
-            id: {
-                [Op.eq]: todoId
-            }
-        }
+    res.render('todosListAndCreateTodo', {
+        todos: rowTodos,
+        userId: userId
     })
-
-    if (rowTodo.length === 0) {
-        res.status(400).send("Todo id does not exist")
-    }
-
-    res.send(rowTodo);
 
 }
 
 
 exports.userTodoView = async (req, res) => {
-    console.log(req.query)
-    const { user, view, todoId } = req.query;
-    if (user && view && view === "todos") {
-
-        const rowUser = await User.findAll({
-            where: {
-                id: parseInt(user)
-            }
-        })
-        if (rowUser.length === 0) {
-
-            res.send("User id does not exist")
+    let { userId, todoId } = req.params;
+    let tagsList = await Tags.findAll({
+        where: {
+            todoId: parseInt(todoId)
         }
-        if (rowUser[0].todoId === null) {
-            res.send("No todo assigned to user")
+    })
+
+    let todoItem = await Todo.findOne({
+        where: {
+            id: parseInt(todoId)
         }
-        const rowTodo = await Todo.findAll({
-            where: {
-                id: {
-                    [Op.eq]: rowUser[0].todoId
-                }
-            }
-        })
+    })
 
-        res.send(rowTodo);
-    }
+    res.render('singleTodo', {
+        tags: tagsList,
+        todo: todoItem
+    });
 
-    if (view && view === 'todo' && todoId) {
-        const rowTodo = await Todo.findAll({
-            where: {
-                id: {
-                    [Op.eq]: parseInt(todoId)
-                }
-            }
-        })
-        res.send(rowTodo);
-    }
 
-    res.status(400).send("Check Query Parameters")
+
+    // console.log(req.query)
+    // const { user, view, todoId } = req.query;
+    // if (user && view && view === "todos") {
+
+    //     const rowUser = await User.findAll({
+    //         where: {
+    //             id: parseInt(user)
+    //         }
+    //     })
+    //     if (rowUser.length === 0) {
+
+    //         res.send("User id does not exist")
+    //     }
+    //     if (rowUser[0].todoId === null) {
+    //         res.send("No todo assigned to user")
+    //     }
+    //     const rowTodo = await Todo.findAll({
+    //         where: {
+    //             id: {
+    //                 [Op.eq]: rowUser[0].todoId
+    //             }
+    //         }
+    //     })
+
+    //     res.send(rowTodo);
+    // }
+
+    // if (view && view === 'todo' && todoId) {
+    //     const rowTodo = await Todo.findAll({
+    //         where: {
+    //             id: {
+    //                 [Op.eq]: parseInt(todoId)
+    //             }
+    //         }
+    //     })
+    //     res.send(rowTodo);
+    // }
+
+    // res.status(400).send("Check Query Parameters")
 }
 
 

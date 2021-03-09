@@ -1,0 +1,30 @@
+doctype html
+html
+    head
+        style. 
+            body {
+                text-align: center
+            }
+            span {
+                margin-right: 10px
+            }
+    body
+        h1 Todo Details
+        div
+            span 
+                strong Ttile:
+            span=todo.title
+        div
+            span 
+                strong Due Date:
+            span=todo.dueDate
+        div
+            span 
+                strong isCompleted:
+            span=todo.isCompleted
+        div
+            span 
+                strong Tags:
+            for tag in tags
+                span=tag.tagName+","
+                

@@ -1,18 +1,44 @@
 const db = require("../models");
 const Todo = db.todo;
+
+const Tags = db.tags;
 const Op = db.Sequelize.Op;
 
 exports.create = async (req, res) => {
-    const todo = {
+    let { userId } = req.params;
+    let todo = {
         title: req.body.title,
         dueDate: req.body.dueDate,
-        isCompleted: req.body.isCompleted
+        isCompleted: req.body.isCompleted === 'on' ? true : false,
+        userId: parseInt(userId)
     };
 
-    try {
-        const data = await Todo.create(todo);
 
-        res.send(data);
+    console.log("todosdfsdfsdfs", todo);
+    try {
+        let createdTodo = await Todo.create(todo);
+        if (req.body.tags) {
+            todo['tags'] = req.body.tags.split(",");
+            for (let tag of todo['tags']) {
+                console.log("tagsdfsdffs", tag)
+                tagItem = {
+                    tagName: tag,
+                    todoId: createdTodo.id
+
+                }
+                await Tags.create(tagItem);
+            }
+        }
+        let todosList = await Todo.findAll({
+            where: {
+                userId: parseInt(userId)
+            }
+        })
+
+        res.render('todosListAndCreateTodo', {
+            todos: todosList,
+            userId: parseInt(userId)
+        });
     }
 
     catch (err) {

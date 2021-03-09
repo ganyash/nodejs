@@ -10,9 +10,6 @@ module.exports = (sequelize, Sequelize) => {
         },
         email: {
             type: DataTypes.STRING
-        },
-        todoId: {
-            type: DataTypes.INTEGER
         }
     },
         {

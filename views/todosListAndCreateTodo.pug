@@ -1,0 +1,55 @@
+doctype html
+html
+    head
+        style.
+            body {
+                display: flex;
+            }
+            div {
+                width: 50%
+            }
+            #formdiv {
+                display:flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content:center;
+            }
+            #todoLists {
+                display: flex;
+                flex-direction: column;
+                flex-wrap: wrap;
+                height: 80vh
+            }
+            label {
+                min-width: 100px;
+                display: inline-block;
+                margin-right: 10px;
+                margin-bottom: 10px;
+            }
+            form {
+                border: 1px solid black;
+                padding: 10px
+            }
+    body
+        div(style={"display": "flex","flex-direction": "column","align-items": "center", "height": "80vh"})
+            h1 Todos List
+            div#todoLists
+                for todo in todos
+                    ul
+                        li=todo.title
+                        a(href=`/api/users/${todo.userId}/todos/${todo.id}` target="_blank") View Todo
+        div#formdiv
+            h1 Create Todo
+            form(action=`/api/users/${userId}/todos` method="post")
+                label Title
+                input(type="text" name="title")
+                br
+                label Due Date
+                input(type="text" name="dueDate")
+                br
+                label isCompleted
+                input(type="checkbox" name="isCompleted")
+                br
+                label Tags
+                input(type="text" name="tags")
+                input(type="submit" value="Create Todo" style={"display":"block"})

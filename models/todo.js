@@ -10,8 +10,13 @@ module.exports = (sequelize, Sequelize) => {
             type: DataTypes.DATE
         },
         isCompleted: {
-            type: DataTypes.BOOLEAN
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        userId: {
+            type: DataTypes.INTEGER
         }
+
     }, {
         freezeTableName: true
     });

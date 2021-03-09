@@ -15,14 +15,21 @@ db.sequelize.authenticate().then(() => console.log("connected"))
 
 db.todo = require("./todo.js")(sequelize, Sequelize);
 db.user = require("./user.js")(sequelize, Sequelize);
+db.tags = require("./tags.js")(sequelize, Sequelize);
 
-const { user, todo } = db;
+const { user, todo, tags } = db;
 
-todo.hasMany(user, {
-    foreignKey: 'todoId'
+user.hasMany(todo, {
+    foreignKey: 'userId'
 })
 
-user.belongsTo(todo);
+todo.belongsTo(user);
+
+todo.hasMany(tags, {
+    foreignKey: 'todoId'
+});
+tags.belongsTo(todo);
+
 
 module.exports = db;
 

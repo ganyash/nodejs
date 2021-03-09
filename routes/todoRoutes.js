@@ -23,7 +23,9 @@ module.exports = app => {
 
     router.get("/users/:userId/todos", user.listTodos)
 
-    // router.get("users/:userId/todos/:todoId", user.todo)
+    router.post("/users/:userId/todos", todo.create)
+
+    router.get("/users/:userId/todos/:todoId", user.userTodoView)
 
 
 };
