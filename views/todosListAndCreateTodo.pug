@@ -5,20 +5,19 @@ html
             body {
                 display: flex;
             }
-            div {
-                width: 50%
-            }
             #formdiv {
                 display:flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content:center;
+                width: 50%
             }
             #todoLists {
                 display: flex;
                 flex-direction: column;
-                flex-wrap: wrap;
-                height: 80vh
+                width: 100%;
+                margin: 10px;
+                overflow-y: auto
             }
             label {
                 min-width: 100px;
@@ -28,16 +27,16 @@ html
             }
             form {
                 border: 1px solid black;
-                padding: 10px
+                padding: 10px;
+                font-family: sans-serif;
+            }
+            table, th, td {
+                border: 1px solid black;
+                text-align: center;
+                margin: 10px;
+                font-family: sans-serif
             }
     body
-        div(style={"display": "flex","flex-direction": "column","align-items": "center", "height": "80vh"})
-            h1 Todos List
-            div#todoLists
-                for todo in todos
-                    ul
-                        li=todo.title
-                        a(href=`/api/users/${todo.userId}/todos/${todo.id}` target="_blank") View Todo
         div#formdiv
             h1 Create Todo
             form(action=`/api/users/${userId}/todos` method="post")
@@ -45,7 +44,7 @@ html
                 input(type="text" name="title")
                 br
                 label Due Date
-                input(type="text" name="dueDate")
+                input(id="date" type="date" name="dueDate")
                 br
                 label isCompleted
                 input(type="checkbox" name="isCompleted")
@@ -53,3 +52,44 @@ html
                 label Tags
                 input(type="text" name="tags")
                 input(type="submit" value="Create Todo" style={"display":"block"})
+        
+        div(style={"display": "flex","width": "50%", "flex-direction": "column","align-items": "center", "height": "97vh"})
+            h1 Todos List
+            div#todoLists
+                table
+                    tr
+                        th Todo Title
+                        th Actions
+                    for todo in todos
+                        tr
+                            td=todo.title
+                            td
+                                a(href=`/api/users/${todo.userId}/todos/${todo.id}` target="_blank") View
+                                p(id="updateTodo"  onclick='fetchTodoForUpdate("'+ todo.id +'" , "'+ todo.userId +'" )' style={"text-decoration":"underline", "color": "blue", "cursor":"pointer"}) Update
+                                p(id="deleteTodo"  onclick='deleteTodo("'+ todo.id +'" , "'+ todo.userId +'" )' style={"text-decoration":"underline", "color": "red", "cursor":"pointer"}) Delete
+        script. 
+            async function deleteTodo(todoId, userId){ 
+                console.log(todoId,userId)
+                if(!confirm("Are you sure you want to delete?")){
+                    return ;
+                }
+              try {
+                   await fetch(`/api/todos/${todoId}`,{
+                    method: 'DELETE'
+               })
+                window.location.href = `/api/users/${userId}/todos`;
+              }catch(err){
+                  alert("something went wrong")
+              }
+            }
+
+             function fetchTodoForUpdate(todoId, userId){
+                window.location.replace(`/api/users/${userId}/todos/${todoId}/update`)
+            }
+             function currentDate() {
+                function pad(s) { return (s < 10) ? '0' + s : s; }
+                var d = new Date()
+                return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`
+               
+            }
+            document.getElementById("date").value=currentDate();

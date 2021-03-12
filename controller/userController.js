@@ -3,6 +3,7 @@ const user = require("../models/user");
 const User = db.user;
 const Todo = db.todo;
 const Tags = db.tags;
+const TodosTags = db.todosTags;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Tutorial
@@ -39,11 +40,14 @@ exports.create = async (req, res) => {
                     const tagsList = todoItem.tags;
                     for (const tagItem of tagsList) {
                         tag = {
-                            tagName: tagItem,
-                            todoId: createdTodo.id
-
+                            tagName: tagItem
                         }
-                        await Tags.create(tag);
+                        const createdTag = await Tags.create(tag);
+                        const todoTagIds = {
+                            todoId: createdTodo.id,
+                            tagId: createdTag.id
+                        }
+                        await TodosTags.create(todoTagIds);
 
                     }
                 }
@@ -83,8 +87,7 @@ exports.list = async (req, res) => {
 exports.update = async (req, res) => {
     // Validate request
     let { userId } = req.params;
-    req.
-        userId = parseInt(userId);
+    userId = parseInt(userId);
 
 
     const row = await User.findAll({
@@ -137,8 +140,15 @@ exports.listTodos = async (req, res) => {
             userId: {
                 [Op.eq]: userId
             }
-        }
+        },
+        order: [
+            ['updatedAt', 'DESC']
+        ],
     })
+
+    if (rowTodos.length === 0) {
+        res.send("User id does not exist, please create user first.")
+    }
 
     res.render('todosListAndCreateTodo', {
         todos: rowTodos,
@@ -150,11 +160,14 @@ exports.listTodos = async (req, res) => {
 
 exports.userTodoView = async (req, res) => {
     let { userId, todoId } = req.params;
-    let tagsList = await Tags.findAll({
+    let tagIds = await TodosTags.findAll({
+        attributes: ['tagId'],
         where: {
             todoId: parseInt(todoId)
         }
     })
+    tagIds = tagIds.map(tagIds => tagIds.tagId);
+    console.log("tagIds", tagIds);
 
     let todoItem = await Todo.findOne({
         where: {
@@ -162,9 +175,22 @@ exports.userTodoView = async (req, res) => {
         }
     })
 
+    if (todoItem === null || todoItem === undefined) {
+        res.send("Todo does not exist")
+    }
+
+
+    let tagsList = await Tags.findAll({
+        where: {
+            id: tagIds
+        }
+    })
+
+
+    console.log(todoItem, tagsList);
     res.render('singleTodo', {
         tags: tagsList,
-        todo: todoItem
+        todo: todoItem ? todoItem : {}
     });
 
 

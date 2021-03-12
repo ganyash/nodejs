@@ -1,6 +1,7 @@
 const db = require("../models");
+const user = require("../models/user");
 const Todo = db.todo;
-
+const TodosTags = db.todosTags;
 const Tags = db.tags;
 const Op = db.Sequelize.Op;
 
@@ -23,16 +24,22 @@ exports.create = async (req, res) => {
                 console.log("tagsdfsdffs", tag)
                 tagItem = {
                     tagName: tag,
-                    todoId: createdTodo.id
-
                 }
-                await Tags.create(tagItem);
+                const createdTag = await Tags.create(tagItem);
+                const todoTagIds = {
+                    todoId: createdTodo.id,
+                    tagId: createdTag.id
+                }
+                await TodosTags.create(todoTagIds);
             }
         }
         let todosList = await Todo.findAll({
             where: {
                 userId: parseInt(userId)
-            }
+            },
+            order: [
+                ['createdAt', 'DESC']
+            ],
         })
 
         res.render('todosListAndCreateTodo', {
@@ -79,7 +86,7 @@ exports.delete = async (req, res) => {
                 id: parseInt(todoId)
             }
         })
-        res.send("deleted")
+        res.status(200).send("Deleted Successfully");
     } catch (err) {
         res.status(500).send({
             message:
@@ -88,6 +95,79 @@ exports.delete = async (req, res) => {
     }
 
 
+}
+
+exports.userTodoForUpdate = async (req, res) => {
+    let { userId, todoId } = req.params;
+
+    let tagIds = await TodosTags.findAll({
+        attributes: ['tagId'],
+        where: {
+            todoId: parseInt(todoId)
+        }
+    })
+    tagIds = tagIds.map(tagIds => tagIds.tagId);
+
+
+    let tagsList = await Tags.findAll({
+        where: {
+            id: tagIds
+        }
+    })
+    let todoItem = await Todo.findOne({
+        where: {
+            id: parseInt(todoId)
+        }
+    })
+    if (todoItem === null || todoItem === undefined) {
+        res.send("Todo does not exist")
+    }
+
+    res.render('updateTodo', {
+        tags: tagsList,
+        todo: todoItem ? todoItem : {},
+        userId,
+        todoId
+    });
+
+}
+
+exports.updateTodo = async (req, res) => {
+    let { todoId } = req.params;
+    todoId = parseInt(todoId)
+    let todo = {
+        title: req.body.title,
+        dueDate: req.body.dueDate,
+        isCompleted: req.body.isCompleted
+    };
+
+    console.log("tojkgdosdfsdfsdfs", req.body);
+    try {
+        let updateTodo = await Todo.update(todo, {
+            where: {
+                id: todoId
+            }
+        });
+        // if (req.body.tags) {
+        //     todo['tags'] = req.body.tags.split(",");
+        //     for (let tag of todo['tags']) {
+        //         console.log("tagsdfsdffs", tag, updateTodo);
+        //         tagItem = {
+        //             tagName: tag
+        //         }
+        //         await Tags.update(tagItem, {
+        //             where: {
+        //                 todoId
+        //             }
+        //         });
+        //     }
+        // }
+        res.status(200).send("updated successfully");
+    }
+    catch (err) {
+        console.log("err", err);
+        res.status(500).send(err);
+    }
 }
 
 

@@ -11,7 +11,9 @@
     "pug": "^3.0.2",
     "sequelize": "^6.5.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "sequelize-cli": "^6.2.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

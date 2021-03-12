@@ -1,0 +1,77 @@
+doctype html
+html
+    head
+        style.
+            #formdiv {
+                display:flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content:center;
+            }
+            label {
+                min-width: 100px;
+                margin-right: 10px;
+            }
+            .row {
+                display:flex;
+                align-items: center;
+                justify-content:center;
+                margin-bottom: 10px;
+            }
+            input {
+                width: 200px
+            }
+           
+    body
+        div#formdiv
+            h1 Update Todo
+            div.row
+                label Title
+                input(id="title" type="text" name="title")
+            div.row
+                label Due Date
+                input(id="dueDate" type="date" name="dueDate")
+            div.row
+                label isCompleted
+                input(id="isDone" type="checkbox" name="isCompleted")
+            div.row
+                label Tags
+                input(id="tags" type="text" name="tags")
+            button(onclick='updateTodo("'+ todo.id +'" , "'+ userId +'" )') Update
+        script. 
+            function convertDate(inputFormat) {
+                 console.log("#{todo.dueDate}")
+                function pad(s) { return (s < 10) ? '0' + s : s; }
+                var d = new Date(inputFormat)
+                var ans =  `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`
+                console.log("ans", ans);
+                return ans;
+            }
+
+            var title = document.getElementById('title')
+            var dueDate = document.getElementById("dueDate")
+            var isDone = document.getElementById("isDone")
+            var tags = document.getElementById("tags")
+
+            title.value = "#{todo.title}"
+            console.log("#{todo.dueDate}")
+            dueDate.value = convertDate("#{todo.dueDate}")
+            isDone.checked =  "#{todo.isCompleted}"
+            tags.value =  "#{tags.map(tag=>tag.tagName)}"
+            console.log(dueDate)
+           
+            async function updateTodo(todoId,userId){
+               try{ 
+                   await fetch(`/api/todos/${todoId}/update`,{
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({title: title.value,dueDate:dueDate.value,isCompleted:isDone.checked,tags: tags.value})
+                   })
+                    window.location.href = `/api/users/${userId}/todos`;
+               }
+               catch(err){
+                    alert(err)
+               }
+            }

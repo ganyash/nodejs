@@ -3,6 +3,8 @@ module.exports = app => {
 
     const todo = require("../controller/todoController.js")
 
+    const tag = require("../controller/tagController.js")
+
     var router = require("express").Router();
 
     app.use('/api', router);
@@ -27,5 +29,11 @@ module.exports = app => {
 
     router.get("/users/:userId/todos/:todoId", user.userTodoView)
 
+
+    router.get("/users/:userId/todos/:todoId/update", todo.userTodoForUpdate)
+
+    router.put("/todos/:todoId/update", todo.updateTodo)
+
+    router.post("/tags/create", tag.create)
 
 };
