@@ -132,6 +132,8 @@ exports.update = async (req, res) => {
 
 exports.listTodos = async (req, res) => {
     let { userId } = req.params;
+    let { page } = req.query;
+    page = page ? parseInt(page) : 1;
 
     userId = parseInt(userId);
 
@@ -144,6 +146,8 @@ exports.listTodos = async (req, res) => {
         order: [
             ['updatedAt', 'DESC']
         ],
+        offset: (page - 1) * 5,
+        limit: 5
     })
 
     if (rowTodos.length === 0) {
@@ -152,7 +156,8 @@ exports.listTodos = async (req, res) => {
 
     res.render('todosListAndCreateTodo', {
         todos: rowTodos,
-        userId: userId
+        userId: userId,
+        page: page
     })
 
 }

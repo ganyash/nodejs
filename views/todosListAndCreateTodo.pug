@@ -67,7 +67,16 @@ html
                                 a(href=`/api/users/${todo.userId}/todos/${todo.id}` target="_blank") View
                                 p(id="updateTodo"  onclick='fetchTodoForUpdate("'+ todo.id +'" , "'+ todo.userId +'" )' style={"text-decoration":"underline", "color": "blue", "cursor":"pointer"}) Update
                                 p(id="deleteTodo"  onclick='deleteTodo("'+ todo.id +'" , "'+ todo.userId +'" )' style={"text-decoration":"underline", "color": "red", "cursor":"pointer"}) Delete
-        script. 
+            div(style={"display":"flex"})
+                a(href=`/api/users/${userId}/todos?page=${page-1}` id="prev") prev
+                a(href=`/api/users/${userId}/todos?page=${page+1}`) next
+        script.
+            var page = #{page}
+            if(page === 1){
+                document.getElementById("prev").style.pointerEvents = "none";
+                document.getElementById("prev").style.cursor = "default";
+                document.getElementById("prev").style.opacity = 0.2;
+            }
             async function deleteTodo(todoId, userId){ 
                 console.log(todoId,userId)
                 if(!confirm("Are you sure you want to delete?")){
