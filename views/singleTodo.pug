@@ -26,5 +26,5 @@ html
             span 
                 strong Tags:
             for tag in tags
-                span=tag.tagName+","
+                span(style={"color":`${tag.color?tag.color:'black'}`})=tag.tagName+","
                 
