@@ -58,7 +58,8 @@ exports.create = async (req, res) => {
             todos: todosList,
             userId: parseInt(userId),
             page: page,
-            totalTodos: JSON.stringify(totalTodos)
+            totalTodos: JSON.stringify(totalTodos),
+            totalTodosInCurrentPage: JSON.stringify(todosList)
         });
     }
 

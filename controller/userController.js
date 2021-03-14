@@ -170,7 +170,8 @@ exports.listTodos = async (req, res) => {
         todos: rowTodos,
         userId: userId,
         page: page,
-        totalTodos: JSON.stringify(totalTodos)
+        totalTodos: JSON.stringify(totalTodos),
+        totalTodosInCurrentPage: JSON.stringify(rowTodos)
     })
 
 }

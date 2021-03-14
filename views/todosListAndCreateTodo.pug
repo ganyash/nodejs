@@ -36,6 +36,9 @@ html
                 margin: 10px;
                 font-family: sans-serif
             }
+            h1 {
+                border-bottom: 1px solid black
+            }
     body
         div#formdiv
             h1 Create Todo
@@ -71,18 +74,25 @@ html
                                     p(id="deleteTodo"  onclick='deleteTodo("'+ todo.id +'" , "'+ todo.userId +'" )' style={"text-decoration":"underline", "color": "red", "cursor":"pointer"}) Delete
                 if JSON.parse(totalTodos).length> 5
                     div(style={"display":"flex"})
-                        a(href=`/api/users/${userId}/todos?page=${page-1}` id="prev") prev
-                        a(href=`/api/users/${userId}/todos?page=${page+1}`) next
+                        a(href=`/api/users/${userId}/todos?page=${page-1}` style={"margin-right": "10px"} id="prev") prev
+                        a(href=`/api/users/${userId}/todos?page=${page+1}` id="next") next
             else
                 div No Todos Assigned For this user.
         script.
             var page = #{page}
             var todosList = !{totalTodos}
+            var totalTodosInCurrentPage = !{totalTodosInCurrentPage}
+            console.log("totalTodosInCurrentPage", totalTodosInCurrentPage)
             console.log("len",todosList.length)
             if(todosList.length> 5 && page === 1){
                 document.getElementById("prev").style.pointerEvents = "none";
                 document.getElementById("prev").style.cursor = "default";
                 document.getElementById("prev").style.opacity = 0.2;
+            }
+            if(todosList.length> 5 && totalTodosInCurrentPage.length < 5){
+                document.getElementById("next").style.pointerEvents = "none";
+                document.getElementById("next").style.cursor = "default";
+                document.getElementById("next").style.opacity = 0.2;
             }
             async function deleteTodo(todoId, userId){ 
                 console.log(todoId,userId)
