@@ -38,28 +38,28 @@ exports.create = async (req, res) => {
                 await TodosTags.create(todoTagIds);
             }
         }
-        const totalTodos = await Todo.findAll({
+        const { count, rows } = await Todo.findAndCountAll({
             where: {
-                userId: userId
-            }
-        });
-        let todosList = await Todo.findAll({
-            where: {
-                userId: parseInt(userId)
+                userId: {
+                    [Op.eq]: userId
+                }
             },
             order: [
-                ['createdAt', 'DESC']
+                ['updatedAt', 'DESC']
             ],
             offset: (page - 1) * 5,
             limit: 5
         })
 
+        const rowTodos = rows;
+        const totalTodos = count;
+
         res.render('todosListAndCreateTodo', {
-            todos: todosList,
+            todos: rowTodos,
             userId: parseInt(userId),
             page: page,
-            totalTodos: JSON.stringify(totalTodos),
-            totalTodosInCurrentPage: JSON.stringify(todosList)
+            totalTodos: totalTodos,
+            totalTodosInCurrentPage: JSON.stringify(rowTodos)
         });
     }
 

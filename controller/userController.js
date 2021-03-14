@@ -147,13 +147,7 @@ exports.listTodos = async (req, res) => {
         res.send("User id does not exist, please create user first.")
     }
 
-    const totalTodos = await Todo.findAll({
-        where: {
-            userId: userId
-        }
-    });
-
-    const rowTodos = await Todo.findAll({
+    const { count, rows } = await Todo.findAndCountAll({
         where: {
             userId: {
                 [Op.eq]: userId
@@ -166,11 +160,14 @@ exports.listTodos = async (req, res) => {
         limit: 5
     })
 
+    const rowTodos = rows;
+    const totalTodos = count;
+
     res.render('todosListAndCreateTodo', {
         todos: rowTodos,
         userId: userId,
         page: page,
-        totalTodos: JSON.stringify(totalTodos),
+        totalTodos: totalTodos,
         totalTodosInCurrentPage: JSON.stringify(rowTodos)
     })
 
