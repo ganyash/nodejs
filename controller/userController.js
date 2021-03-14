@@ -137,6 +137,22 @@ exports.listTodos = async (req, res) => {
 
     userId = parseInt(userId);
 
+    const isUserIdPresent = await User.findOne({
+        where: {
+            id: userId
+        }
+    })
+
+    if (isUserIdPresent === null) {
+        res.send("User id does not exist, please create user first.")
+    }
+
+    const totalTodos = await Todo.findAll({
+        where: {
+            userId: userId
+        }
+    });
+
     const rowTodos = await Todo.findAll({
         where: {
             userId: {
@@ -150,14 +166,11 @@ exports.listTodos = async (req, res) => {
         limit: 5
     })
 
-    if (rowTodos.length === 0) {
-        res.send("User id does not exist, please create user first.")
-    }
-
     res.render('todosListAndCreateTodo', {
         todos: rowTodos,
         userId: userId,
-        page: page
+        page: page,
+        totalTodos: JSON.stringify(totalTodos)
     })
 
 }
@@ -197,48 +210,6 @@ exports.userTodoView = async (req, res) => {
         tags: tagsList,
         todo: todoItem ? todoItem : {}
     });
-
-
-
-    // console.log(req.query)
-    // const { user, view, todoId } = req.query;
-    // if (user && view && view === "todos") {
-
-    //     const rowUser = await User.findAll({
-    //         where: {
-    //             id: parseInt(user)
-    //         }
-    //     })
-    //     if (rowUser.length === 0) {
-
-    //         res.send("User id does not exist")
-    //     }
-    //     if (rowUser[0].todoId === null) {
-    //         res.send("No todo assigned to user")
-    //     }
-    //     const rowTodo = await Todo.findAll({
-    //         where: {
-    //             id: {
-    //                 [Op.eq]: rowUser[0].todoId
-    //             }
-    //         }
-    //     })
-
-    //     res.send(rowTodo);
-    // }
-
-    // if (view && view === 'todo' && todoId) {
-    //     const rowTodo = await Todo.findAll({
-    //         where: {
-    //             id: {
-    //                 [Op.eq]: parseInt(todoId)
-    //             }
-    //         }
-    //     })
-    //     res.send(rowTodo);
-    // }
-
-    // res.status(400).send("Check Query Parameters")
 }
 
 

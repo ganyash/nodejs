@@ -39,7 +39,7 @@ html
     body
         div#formdiv
             h1 Create Todo
-            form(action=`/api/users/${userId}/todos` method="post")
+            form(action=`/api/users/${userId}/todos?page=${page}` method="post")
                 label Title
                 input(type="text" name="title")
                 br
@@ -53,26 +53,33 @@ html
                 input(type="text" name="tags")
                 input(type="submit" value="Create Todo" style={"display":"block"})
         
+        
         div(style={"display": "flex","width": "50%", "flex-direction": "column","align-items": "center", "height": "97vh"})
             h1 Todos List
-            div#todoLists
-                table
-                    tr
-                        th Todo Title
-                        th Actions
-                    for todo in todos
+            if JSON.parse(totalTodos).length> 0
+                div#todoLists
+                    table
                         tr
-                            td=todo.title
-                            td
-                                a(href=`/api/users/${todo.userId}/todos/${todo.id}` target="_blank") View
-                                p(id="updateTodo"  onclick='fetchTodoForUpdate("'+ todo.id +'" , "'+ todo.userId +'" )' style={"text-decoration":"underline", "color": "blue", "cursor":"pointer"}) Update
-                                p(id="deleteTodo"  onclick='deleteTodo("'+ todo.id +'" , "'+ todo.userId +'" )' style={"text-decoration":"underline", "color": "red", "cursor":"pointer"}) Delete
-            div(style={"display":"flex"})
-                a(href=`/api/users/${userId}/todos?page=${page-1}` id="prev") prev
-                a(href=`/api/users/${userId}/todos?page=${page+1}`) next
+                            th Todo Title
+                            th Actions
+                        for todo in todos
+                            tr
+                                td=todo.title
+                                td
+                                    a(href=`/api/users/${todo.userId}/todos/${todo.id}` target="_blank") View
+                                    p(id="updateTodo"  onclick='fetchTodoForUpdate("'+ todo.id +'" , "'+ todo.userId +'" )' style={"text-decoration":"underline", "color": "blue", "cursor":"pointer"}) Update
+                                    p(id="deleteTodo"  onclick='deleteTodo("'+ todo.id +'" , "'+ todo.userId +'" )' style={"text-decoration":"underline", "color": "red", "cursor":"pointer"}) Delete
+                if JSON.parse(totalTodos).length> 5
+                    div(style={"display":"flex"})
+                        a(href=`/api/users/${userId}/todos?page=${page-1}` id="prev") prev
+                        a(href=`/api/users/${userId}/todos?page=${page+1}`) next
+            else
+                div No Todos Assigned For this user.
         script.
             var page = #{page}
-            if(page === 1){
+            var todosList = !{totalTodos}
+            console.log("len",todosList.length)
+            if(todosList.length> 5 && page === 1){
                 document.getElementById("prev").style.pointerEvents = "none";
                 document.getElementById("prev").style.cursor = "default";
                 document.getElementById("prev").style.opacity = 0.2;

@@ -56,7 +56,7 @@ html
             title.value = "#{todo.title}"
             console.log("#{todo.dueDate}")
             dueDate.value = convertDate("#{todo.dueDate}")
-            isDone.checked =  "#{todo.isCompleted}"
+            isDone.checked =  #{todo.isCompleted}
             tags.value =  "#{tags.map(tag=>tag.tagName)}"
             console.log(dueDate)
            

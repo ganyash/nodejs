@@ -7,12 +7,17 @@ const Op = db.Sequelize.Op;
 
 exports.create = async (req, res) => {
     let { userId } = req.params;
+    let { page } = req.query;
     let todo = {
         title: req.body.title,
         dueDate: req.body.dueDate,
         isCompleted: req.body.isCompleted === 'on' ? true : false,
         userId: parseInt(userId)
     };
+
+    page = page ? parseInt(page) : 1;
+
+    userId = parseInt(userId);
 
 
     console.log("todosdfsdfsdfs", todo);
@@ -33,6 +38,11 @@ exports.create = async (req, res) => {
                 await TodosTags.create(todoTagIds);
             }
         }
+        const totalTodos = await Todo.findAll({
+            where: {
+                userId: userId
+            }
+        });
         let todosList = await Todo.findAll({
             where: {
                 userId: parseInt(userId)
@@ -40,11 +50,15 @@ exports.create = async (req, res) => {
             order: [
                 ['createdAt', 'DESC']
             ],
+            offset: (page - 1) * 5,
+            limit: 5
         })
 
         res.render('todosListAndCreateTodo', {
             todos: todosList,
-            userId: parseInt(userId)
+            userId: parseInt(userId),
+            page: page,
+            totalTodos: JSON.stringify(totalTodos)
         });
     }
 
@@ -148,20 +162,6 @@ exports.updateTodo = async (req, res) => {
                 id: todoId
             }
         });
-        // if (req.body.tags) {
-        //     todo['tags'] = req.body.tags.split(",");
-        //     for (let tag of todo['tags']) {
-        //         console.log("tagsdfsdffs", tag, updateTodo);
-        //         tagItem = {
-        //             tagName: tag
-        //         }
-        //         await Tags.update(tagItem, {
-        //             where: {
-        //                 todoId
-        //             }
-        //         });
-        //     }
-        // }
         res.status(200).send("updated successfully");
     }
     catch (err) {
