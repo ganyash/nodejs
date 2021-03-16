@@ -6,10 +6,12 @@ exports.create = async (req, res) => {
         tagName: req.body.tag
     }
     try {
-        await Tags.create(tagItem);
+        const t = await Tags.create(tagItem);
+        console.log("t", t.tagColor, "tagooooooooooo", Tags)
         res.status(200).send(tagItem);
     }
     catch (err) {
+        console.log("hey you are in catch, yipeeee!!!", err)
         res.send(err)
     }
 }

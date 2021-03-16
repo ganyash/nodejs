@@ -1,22 +1,18 @@
-const express = require('express')
-const db = require("./models");
-const routes = require("./routes/todoRoutes.js");
-const path = require('path');
+var express = require('express');
+var db = require("./models");
+var routes = require("./routes/todoRoutes.js");
+var path = require('path');
 function todoApp() {
-    const app = express();
-
+    var app = express();
     app.set('views', path.join(__dirname, 'views'));
-    app.set('view engine', 'pug')
-
+    app.set('view engine', 'pug');
     app.use(express.json());
     app.use(express.urlencoded());
     routes(app);
-
-    const port = process.env.PORT || 4242;
-
-    app.listen(port, () => console.log(`listening on port ${port}`))
+    var port = process.env.PORT || 4242;
+    app.listen(port, function () { return console.log("listening on port " + port); });
 }
-db.sequelize.sync().then(() => {
-    console.log("db synced");
+db.sequelize.authenticate().then(function () {
+    console.log("db authenticated");
     todoApp();
 });

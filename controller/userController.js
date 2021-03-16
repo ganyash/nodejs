@@ -161,6 +161,8 @@ exports.listTodos = async (req, res) => {
     })
 
     const rowTodos = rows;
+
+    console.log(JSON.stringify(rowTodos, null, 2))
     const totalTodos = count;
 
     res.render('todosListAndCreateTodo', {

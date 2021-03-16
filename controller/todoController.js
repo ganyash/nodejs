@@ -52,6 +52,7 @@ exports.create = async (req, res) => {
         })
 
         const rowTodos = rows;
+        console.log(JSON.stringify(rowTodos), null, 4)
         const totalTodos = count;
 
         res.render('todosListAndCreateTodo', {
